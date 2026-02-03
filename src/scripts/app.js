@@ -80,9 +80,6 @@ let inShop = false;
 let bakeryInterior, bakeryPain, bakeryExit;
 let shopInterior, shopParapluie, shopMouchoirs, shopExit;
 
-// HUD intérieurs
-let interiorMoneyText, interiorMouchoirText;
-
 // Sons intérieurs
 let obtentionItemSon, checkoutSon, porteOuvreSon, jumpSon;
 
@@ -682,10 +679,6 @@ class MainWorld extends Phaser.Scene {
 
         // Déplacement caméra
         this.cameras.main.pan(20500, 400, 500);
-
-        // HUD
-        interiorMoneyText.setText('Argent : ' + money + '$').setVisible(true);
-        interiorMouchoirText.setVisible(false);
     }
 
     teleportBackFromBakery() {
@@ -695,10 +688,6 @@ class MainWorld extends Phaser.Scene {
         // Retour rue
         this.player.setPosition(13500, 500);
         this.cameras.main.pan(13500, 400, 500);
-
-        // HUD off
-        interiorMoneyText.setVisible(false);
-        interiorMouchoirText.setVisible(false);
     }
 
     teleportToShop() {
@@ -709,10 +698,6 @@ class MainWorld extends Phaser.Scene {
         // Position intérieure shop
         this.player.setPosition(23500, 500);
         this.cameras.main.pan(23500, 400, 500);
-
-        // HUD
-        interiorMoneyText.setText('Argent : ' + money + '$').setVisible(true);
-        interiorMouchoirText.setText('Mouchoirs : ' + mouchoirs).setVisible(true);
     }
 
     teleportBackFromShop() {
@@ -722,10 +707,6 @@ class MainWorld extends Phaser.Scene {
         // Retour rue
         this.player.setPosition(7000, 500);
         this.cameras.main.pan(7000, 400, 500);
-
-        // HUD off
-        interiorMoneyText.setVisible(false);
-        interiorMouchoirText.setVisible(false);
     }
 
     preload(data){
@@ -1122,39 +1103,6 @@ class MainWorld extends Phaser.Scene {
             }
         }, null, this);
 
-        interiorMoneyText = this.add.text(10, 10, '', {
-            fontSize: '28px',
-            fill: '#000F05',
-            fontFamily: 'Fira Sans Condensed',
-            fontStyle: 'bold',
-            backgroundColor: "rgba(255,255,255,0.4)",
-            padding: { x: 12, y: 9 }
-        }).setScrollFactor(0).setVisible(false);
-
-        interiorMouchoirText = this.add.text(400, 10, '', {
-            fontSize: '28px',
-            fill: '#000F05',
-            fontFamily: 'Fira Sans Condensed',
-            fontStyle: 'bold',
-            backgroundColor: "rgba(255,255,255,0.4)",
-            padding: { x: 12, y: 9 }
-        }).setScrollFactor(0).setVisible(false);
-
-        this.showBakeryHUD = () => {
-            interiorMoneyText.setText('Argent : ' + money + '$').setVisible(true);
-            interiorMouchoirText.setVisible(false);
-        };
-
-        this.showShopHUD = () => {
-            interiorMoneyText.setText('Argent : ' + money + '$').setVisible(true);
-            interiorMouchoirText.setText('Mouchoirs : ' + mouchoirs).setVisible(true);
-        };
-
-        this.hideInteriorHUD = () => {
-            interiorMoneyText.setVisible(false);
-            interiorMouchoirText.setVisible(false);
-        };
-
         // caméra
         this.cameras.main.setBounds(0, 0, 26000, 0);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1, 0, 245);
@@ -1218,25 +1166,6 @@ class MainWorld extends Phaser.Scene {
             padding: { x: 12, y: 9 }
         });
         this.mouchoirText.setScrollFactor(0).setDepth(10001);
-
-        // HUD intérieur
-        interiorMoneyText = this.add.text(10, 10, '', {
-            fontSize: '28px',
-            fill: '#000F05',
-            fontFamily: 'Fira Sans Condensed',
-            fontStyle: 'bold',
-            backgroundColor: "rgba(255,255,255,0.4)",
-            padding: { x: 12, y: 9 }
-        }).setScrollFactor(0).setVisible(false);
-
-        interiorMouchoirText = this.add.text(400, 10, '', {
-            fontSize: '28px',
-            fill: '#000F05',
-            fontFamily: 'Fira Sans Condensed',
-            fontStyle: 'bold',
-            backgroundColor: "rgba(255,255,255,0.4)",
-            padding: { x: 12, y: 9 }
-        }).setScrollFactor(0).setVisible(false);
 
         //timer
         runTimerText = this.add.text(540, 10, "00:00.000", {
@@ -1564,6 +1493,11 @@ class MainWorld extends Phaser.Scene {
             this.bateau,
             this.bird,
             this.cone,
+            bakeryInterior,
+            shopInterior,
+            bakeryPain,
+            shopParapluie,
+            shopMouchoirs,
             this.player
         ]); // les ... sont pour décomposer les tableau pour que Phaser puisse appliquer l'effet sur tous les éléments du tableau
 
@@ -1851,7 +1785,7 @@ class MainWorld extends Phaser.Scene {
                 playerHasBread = true;
                 bakeryPain.disableBody(true, true);
                 money -= 5;
-                interiorMoneyText.setText('Argent : ' + money + '$');
+                this.scoreText.setText('Argent : ' + money + "$");
             }
         }
 
@@ -1860,7 +1794,7 @@ class MainWorld extends Phaser.Scene {
                 playerHasUmbrella = true;
                 shopParapluie.disableBody(true, true);
                 money -= 4;
-                interiorMoneyText.setText('Argent : ' + money + '$');
+                this.scoreText.setText('Argent : ' + money + "$");
             }
         }
 
@@ -1868,8 +1802,8 @@ class MainWorld extends Phaser.Scene {
             if (money >= 2) {
                 money -= 2;
                 mouchoirs += 1;
-                interiorMoneyText.setText('Argent : ' + money + '$');
-                interiorMouchoirText.setText('Mouchoirs : ' + mouchoirs);
+                this.scoreText.setText('Argent : ' + money + "$");
+                this.mouchoirText.setText('Mouchoirs : ' + mouchoirs);
             }
         }
 
