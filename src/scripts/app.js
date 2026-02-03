@@ -642,6 +642,34 @@ class MainWorld extends Phaser.Scene {
         }
     }
 
+    addFog() {
+        // Création d’un rectangle semi-transparent couvrant l’écran
+        const graphics = this.add.graphics();
+        graphics.fillStyle(0xdbdbdbff, 1); // couleur + opacité complète
+        graphics.fillRect(0, 0, this.scale.width, this.scale.height);
+
+        // Créer une texture de brouillard à partir du graphic
+        const fogTextureKey = 'fogTexture';
+        graphics.generateTexture(fogTextureKey, this.scale.width, this.scale.height);
+        graphics.destroy();
+
+        // Ajouter le sprite de brouillard
+        this.fogSprite = this.add.sprite(0, 0, fogTextureKey).setOrigin(0, 0);
+        this.fogSprite.setScrollFactor(0); // reste fixe à la caméra
+        this.fogSprite.setAlpha(0.9);
+
+        // Animation d’apparition du brouillard
+        this.tweens.add({
+            targets: this.fogSprite,
+            alpha: 0,
+            duration: 4000,
+            ease: 'Linear',
+            onComplete: () => {
+                this.fogSprite.destroy();
+            }
+        });
+    }
+
     // TÉLÉPORTATIONS INTÉRIEURS
 
     teleportToBakery() {
@@ -1030,7 +1058,18 @@ class MainWorld extends Phaser.Scene {
         this.physics.add.collider(this.player, this.bigPlat); //Chantier plat grande grue
 
         this.physics.add.collider(this.player, bakeryGround);
+        let leftWallBakery = this.physics.add.staticImage(19996, 600, null).setSize(10, 300).setVisible(false);
+        let rightWallBakery = this.physics.add.staticImage(20776, 600, null).setSize(10, 300).setVisible(false);
+        this.physics.add.collider(this.player, leftWallBakery);
+        this.physics.add.collider(this.player, rightWallBakery);
+
         this.physics.add.collider(this.player, shopGround);
+        
+        let leftWallShop = this.physics.add.staticImage(23195, 600, null).setSize(10, 300).setVisible(false);
+        this.physics.add.collider(this.player, leftWallShop);
+        
+        let rightWallShop = this.physics.add.staticImage(23975, 600, null).setSize(10, 300).setVisible(false);
+        this.physics.add.collider(this.player, rightWallShop);
 
         // entrer dans la boulangerie (message)
         this.physics.add.overlap(this.player, enterBakery, () => {
