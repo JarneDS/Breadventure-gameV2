@@ -675,13 +675,17 @@ class MainWorld extends Phaser.Scene {
     // TÉLÉPORTATIONS INTÉRIEURS
 
     teleportToBakery() {
+        this.isInInterior = true;
         this.porteOuvreSon.play();
         inBakery = true;
         inShop = false;
 
         // Position intérieure boulangerie
         this.player.setPosition(20159, 500);
-        this.cameras.main.pan(20159, 400, 500);
+        //this.cameras.main.pan(20159, 400, 500);
+        this.cameras.main.stopFollow();
+        this.cameras.main.setBounds(this.bakeryCamPoint.x, this.bakeryCamPoint.y, 0, 0);
+        this.cameras.main.centerOn(this.bakeryCamPoint.x, this.bakeryCamPoint.y); 
 
         if (bakeryText) {
             bakeryText.destroy();
@@ -691,6 +695,7 @@ class MainWorld extends Phaser.Scene {
     }
 
     teleportBackFromBakery() {
+        this.isInInterior = false;
         this.porteOuvreSon.play();
         inBakery = false;
 
@@ -706,16 +711,21 @@ class MainWorld extends Phaser.Scene {
     }
 
     teleportToShop() {
+        this.isInInterior = true;
         this.porteOuvreSon.play();
         inShop = true;
         inBakery = false;
 
         // Position intérieure shop
         this.player.setPosition(23584, 500);
-        this.cameras.main.pan(23584, 400, 500);
+        //this.cameras.main.pan(23584, 400, 500);
+        this.cameras.main.stopFollow();
+        this.cameras.main.setBounds(this.shopCamPoint.x, this.shopCamPoint.y, 0, 0);
+        this.cameras.main.centerOn(this.shopCamPoint.x, this.shopCamPoint.y); 
     }
 
     teleportBackFromShop() {
+        this.isInInterior = false;
         this.porteOuvreSon.play();
         inShop = false;
 
@@ -776,12 +786,16 @@ class MainWorld extends Phaser.Scene {
         bakeryExit = this.physics.add.staticImage(20159, 685, null).setSize(58,100).setVisible(false);
         let bakeryGround = this.physics.add.staticImage(20600, 784, null).setSize(1200,100).setVisible(false);
 
+        this.bakeryCamPoint = { x: 20000, y: 0 };
+
         // ZONE SHOP (INTÉRIEUR)
         shopInterior = this.add.image(23000, -190, 'interieur_shop').setOrigin(0,0);
         shopParapluie = this.physics.add.image(23382, 662, 'parapluie');
         shopMouchoirs = this.physics.add.image(23784, 660, 'mouchoirs');
         shopExit = this.physics.add.staticImage(23585, 685, null).setSize(57,100).setVisible(false);
         let shopGround = this.physics.add.staticImage(23600, 784, null).setSize(1200,100).setVisible(false);
+
+        this.shopCamPoint = { x: 23000, y: 0 };
 
 
         const arrow = this.add.sprite(7140, 630, 'arrow');
@@ -912,6 +926,7 @@ class MainWorld extends Phaser.Scene {
         this.player.money = money;
     
         this.cone = this.physics.add.staticImage(30, 692, 'cone');
+        this.cone2 = this.physics.add.staticImage(13911, 692, 'cone');
 
         // sols visuels
         this.ground = this.add.tileSprite(-40, 738, 4096, 100, 'ground').setOrigin(0, 0);
@@ -1034,6 +1049,7 @@ class MainWorld extends Phaser.Scene {
         // colliders
         this.physics.add.collider(this.player, groundCollider);
         this.physics.add.collider(this.player, this.cone);
+        this.physics.add.collider(this.player, this.cone2);
         this.physics.add.collider(this.player, waterGroundCollider);//sol riviere
         this.physics.add.collider(this.player, groundCollider2);
         this.physics.add.collider(this.player, groundColliderExtra1);
@@ -1156,8 +1172,9 @@ class MainWorld extends Phaser.Scene {
             }
         }, null, this);
 
+        this.isInInterior = false;
         // caméra
-        this.cameras.main.setBounds(0, 0, 26000, 0);
+        this.cameras.main.setBounds(0, 0, 14000, 0);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1, 0, 245);
     
         // argent (ne génère qu'une pièce à la fois)
@@ -1546,6 +1563,7 @@ class MainWorld extends Phaser.Scene {
             this.bateau,
             this.bird,
             this.cone,
+            this.cone2,
             bakeryInterior,
             shopInterior,
             bakeryPain,
@@ -1570,6 +1588,7 @@ class MainWorld extends Phaser.Scene {
         if (!isInEnterBakeryZone && bakeryText) {
             bakeryText.destroy();
             bakeryText = null;
+            bakeryTextShown = false;
         }
         isInEnterBakeryZone = false;
 
@@ -1582,6 +1601,7 @@ class MainWorld extends Phaser.Scene {
         if (!isInExitBakeryZone && bakeryText2) {
             bakeryText2.destroy();
             bakeryText2 = null;
+            bakeryTextShown2 = false;
         }
         isInExitBakeryZone = false;
 
@@ -1593,6 +1613,7 @@ class MainWorld extends Phaser.Scene {
         if (!isInEnterShopZone && shopText) {
             shopText.destroy();
             shopText = null;
+            shopTextShown = false;
         }
         isInEnterShopZone = false;
 
@@ -1604,6 +1625,7 @@ class MainWorld extends Phaser.Scene {
         if (!isInExitShopZone && shopText2) {
             shopText2.destroy();
             shopText2 = null;
+            shopTextShown2 = false;
         }
         isInExitShopZone = false;
 
@@ -1878,7 +1900,7 @@ class MainWorld extends Phaser.Scene {
         this.ciel1.tilePositionX = this.cameras.main.scrollX * 0.06;
         this.ciel4.tilePositionX = this.cameras.main.scrollX * 0.06;*/
 
-        console.log(this.player.x);
+        console.log(this.player.y);
     }
 }
 
