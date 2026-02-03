@@ -681,11 +681,24 @@ class MainWorld extends Phaser.Scene {
         inShop = false;
 
         // Position intérieure boulangerie
-        this.player.setPosition(20159, 500);
-        //this.cameras.main.pan(20159, 400, 500);
+        this.player.setPosition(20159, 734);
+        
         this.cameras.main.stopFollow();
-        this.cameras.main.setBounds(this.bakeryCamPoint.x, this.bakeryCamPoint.y, 0, 0);
-        this.cameras.main.centerOn(this.bakeryCamPoint.x, this.bakeryCamPoint.y); 
+
+        const camWidth = this.cameras.main.width;
+        const camHeight = this.cameras.main.height;
+
+        this.cameras.main.setBounds(
+            this.bakeryCamPoint.x - camWidth / 2,
+            this.bakeryCamPoint.y - camHeight / 2,
+            camWidth,
+            camHeight
+        );
+
+        this.cameras.main.centerOn(
+            this.bakeryCamPoint.x,
+            this.bakeryCamPoint.y
+        );
 
         if (bakeryText) {
             bakeryText.destroy();
@@ -700,8 +713,11 @@ class MainWorld extends Phaser.Scene {
         inBakery = false;
 
         // Retour rue
-        this.player.setPosition(13758, 500);
-        this.cameras.main.pan(13758, 400, 500);
+        this.player.setPosition(13758, 738);
+        this.cameras.main.setBounds(0, 0, 14000, this.scale.height);
+        this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+
+        this.cameras.main.centerOn(13758, 738);
 
         if (bakeryText2) {
             bakeryText2.destroy();
@@ -717,11 +733,12 @@ class MainWorld extends Phaser.Scene {
         inBakery = false;
 
         // Position intérieure shop
-        this.player.setPosition(23584, 500);
-        //this.cameras.main.pan(23584, 400, 500);
+        this.player.setPosition(23584, 734);
+        
         this.cameras.main.stopFollow();
-        this.cameras.main.setBounds(this.shopCamPoint.x, this.shopCamPoint.y, 0, 0);
-        this.cameras.main.centerOn(this.shopCamPoint.x, this.shopCamPoint.y); 
+        this.cameras.main.setBounds(22900, -300, 3000, 1500);
+        //this.cameras.main.centerOn(this.player.x, this.player.y);
+
     }
 
     teleportBackFromShop() {
@@ -730,8 +747,11 @@ class MainWorld extends Phaser.Scene {
         inShop = false;
 
         // Retour rue
-        this.player.setPosition(7141, 500);
-        this.cameras.main.pan(7141, 400, 500);
+        this.player.setPosition(7141, 738);
+        this.cameras.main.setBounds(0, 0, 14000, this.scale.height);
+        this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+
+        this.cameras.main.centerOn(7141, 738);
     }
 
     preload(data){
@@ -787,6 +807,7 @@ class MainWorld extends Phaser.Scene {
         let bakeryGround = this.physics.add.staticImage(20600, 784, null).setSize(1200,100).setVisible(false);
 
         this.bakeryCamPoint = { x: 20000, y: 0 };
+        this.shopCamPoint = { x: 23000, y: 0 };
 
         // ZONE SHOP (INTÉRIEUR)
         shopInterior = this.add.image(23000, -190, 'interieur_shop').setOrigin(0,0);
