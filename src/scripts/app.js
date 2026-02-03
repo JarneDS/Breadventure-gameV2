@@ -61,8 +61,10 @@ let playerHasUmbrella = false;
 let playerHasMouchoirs = false;
 
 let isInEnterBakeryZone = false;
+let isInExitBakeryZone = false;
 
-
+let isInEnterShopZone = false;
+let isInExitShopZone = false;
 
 let playerHasBrum = false;
 
@@ -1085,6 +1087,7 @@ class MainWorld extends Phaser.Scene {
 
         // sortir de la boulangerie (message)
         this.physics.add.overlap(this.player, bakeryExit, () => {
+            isInExitBakeryZone = true;
             if (!bakeryTextShown2) {
                 bakeryText2 = this.add.text(10, 70, 'Appuyer sur A pour sortir de la boulangerie', {
                     fontSize: '28px',
@@ -1102,6 +1105,7 @@ class MainWorld extends Phaser.Scene {
 
         // entrer dans le shop (message)
         this.physics.add.overlap(this.player, enterShop, () => {
+            isInEnterShopZone = true;
             if (!shopTextShown) {
                 shopText = this.add.text(10, 70, 'Appuyer sur A pour entrer dans la boutique', {
                     fontSize: '28px',
@@ -1119,6 +1123,7 @@ class MainWorld extends Phaser.Scene {
 
         // sortir du shop (message)
         this.physics.add.overlap(this.player, shopExit, () => {
+            isInExitShopZone = true;
             if (!shopTextShown2) {
                 shopText2 = this.add.text(10, 70, 'Appuyer sur A pour sortir de la boutique', {
                     fontSize: '28px',
@@ -1134,7 +1139,7 @@ class MainWorld extends Phaser.Scene {
             }
         }, null, this);
 
-        // entrer dans maison
+        // entrer dans maison (message)
         this.physics.add.overlap(this.player, enterHouse, () => {
             if (!houseTextShown && playerHasBread) {
                 houseText = this.add.text(10, 50, 'Appuyer sur A pour rentrer chez vous', {
@@ -1215,7 +1220,7 @@ class MainWorld extends Phaser.Scene {
         });
         this.mouchoirText.setScrollFactor(0).setDepth(10001);
 
-        //timer
+        // timer
         runTimerText = this.add.text(540, 10, "00:00.000", {
             fontSize: "21px",
             fontFamily: "Fira Sans Condensed",
@@ -1574,15 +1579,33 @@ class MainWorld extends Phaser.Scene {
             this.teleportBackFromBakery();
         }
 
+        if (!isInExitBakeryZone && bakeryText2) {
+            bakeryText2.destroy();
+            bakeryText2 = null;
+        }
+        isInExitBakeryZone = false;
+
         // --- ENTRÉE SHOP ---
         if (!inShop && this.player.x > 7130 && this.player.x < 7190 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToShop();
         }
 
+        if (!isInEnterShopZone && shopText) {
+            shopText.destroy();
+            shopText = null;
+        }
+        isInEnterShopZone = false;
+
         // --- SORTIE SHOP ---
         if (inShop && this.player.x > 23576 && this.player.x < 23633 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromShop();
         }
+
+        if (!isInExitShopZone && shopText2) {
+            shopText2.destroy();
+            shopText2 = null;
+        }
+        isInExitShopZone = false;
 
         this.player.setVelocityX(0);
 
@@ -1686,7 +1709,7 @@ class MainWorld extends Phaser.Scene {
             const distance2 = Phaser.Math.Distance.Between(this.player.x, this.player.y, 13760, 699);
 
             if (!painPrisShown && distance2 <= 100) {
-                painPris = this.add.text(10, 50, 'Vous avez déjà un pain...', {
+                painPris = this.add.text(10, 70, 'Vous avez déjà un pain...', {
                     fontSize: '28px',
                     fill: '#000F05',
                     fontFamily: 'Fira Sans Condensed',
