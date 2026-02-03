@@ -60,6 +60,9 @@ let playerHasBread = false;
 let playerHasUmbrella = false;
 let playerHasMouchoirs = false;
 
+let isInEnterBakeryZone = false;
+
+
 
 let playerHasBrum = false;
 
@@ -675,10 +678,14 @@ class MainWorld extends Phaser.Scene {
         inShop = false;
 
         // Position intérieure boulangerie
-        this.player.setPosition(20500, 500);
+        this.player.setPosition(20159, 500);
+        this.cameras.main.pan(20159, 400, 500);
 
-        // Déplacement caméra
-        this.cameras.main.pan(20500, 400, 500);
+        if (bakeryText) {
+            bakeryText.destroy();
+            bakeryText = null;
+        }
+        bakeryTextShown = false;
     }
 
     teleportBackFromBakery() {
@@ -686,8 +693,14 @@ class MainWorld extends Phaser.Scene {
         inBakery = false;
 
         // Retour rue
-        this.player.setPosition(13500, 500);
-        this.cameras.main.pan(13500, 400, 500);
+        this.player.setPosition(13758, 500);
+        this.cameras.main.pan(13758, 400, 500);
+
+        if (bakeryText2) {
+            bakeryText2.destroy();
+            bakeryText2 = null;
+        }
+        bakeryTextShown2 = false;
     }
 
     teleportToShop() {
@@ -696,8 +709,8 @@ class MainWorld extends Phaser.Scene {
         inBakery = false;
 
         // Position intérieure shop
-        this.player.setPosition(23500, 500);
-        this.cameras.main.pan(23500, 400, 500);
+        this.player.setPosition(23584, 500);
+        this.cameras.main.pan(23584, 400, 500);
     }
 
     teleportBackFromShop() {
@@ -705,8 +718,8 @@ class MainWorld extends Phaser.Scene {
         inShop = false;
 
         // Retour rue
-        this.player.setPosition(7000, 500);
-        this.cameras.main.pan(7000, 400, 500);
+        this.player.setPosition(7141, 500);
+        this.cameras.main.pan(7141, 400, 500);
     }
 
     preload(data){
@@ -1054,6 +1067,7 @@ class MainWorld extends Phaser.Scene {
 
         // entrer dans la boulangerie (message)
         this.physics.add.overlap(this.player, enterBakery, () => {
+            isInEnterBakeryZone = true;
             if (!bakeryTextShown) {
                 bakeryText = this.add.text(10, 70, 'Appuyer sur A pour entrer dans la boulangerie', {
                     fontSize: '28px',
@@ -1066,6 +1080,23 @@ class MainWorld extends Phaser.Scene {
                 bakeryText.setScrollFactor(0);
                 bakeryTextShown = true;
                 bakeryText.setDepth(10000);
+            }
+        }, null, this);
+
+        // sortir de la boulangerie (message)
+        this.physics.add.overlap(this.player, bakeryExit, () => {
+            if (!bakeryTextShown2) {
+                bakeryText2 = this.add.text(10, 70, 'Appuyer sur A pour sortir de la boulangerie', {
+                    fontSize: '28px',
+                    fill: '#000F05',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                bakeryText2.setScrollFactor(0);
+                bakeryTextShown2 = true;
+                bakeryText2.setDepth(10000);
             }
         }, null, this);
 
@@ -1083,6 +1114,23 @@ class MainWorld extends Phaser.Scene {
                 shopText.setScrollFactor(0);
                 shopTextShown = true;
                 shopText.setDepth(10000);
+            }
+        }, null, this);
+
+        // sortir du shop (message)
+        this.physics.add.overlap(this.player, shopExit, () => {
+            if (!shopTextShown2) {
+                shopText2 = this.add.text(10, 70, 'Appuyer sur A pour sortir de la boutique', {
+                    fontSize: '28px',
+                    fill: '#000F05',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                shopText2.setScrollFactor(0);
+                shopTextShown2 = true;
+                shopText2.setDepth(10000);
             }
         }, null, this);
 
@@ -1510,34 +1558,29 @@ class MainWorld extends Phaser.Scene {
     
     update() {
         // --- ENTRÉE BOULANGERIE ---
-        if (!inBakery &&
-            this.player.x > 13760 && this.player.x < 13800 &&
-            Phaser.Input.Keyboard.JustDown(keyObject)) {
-
+        if (!inBakery && this.player.x > 13760 && this.player.x < 13800 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToBakery();
         }
 
-        // --- SORTIE BOULANGERIE ---
-        if (inBakery &&
-            Phaser.Input.Keyboard.JustDown(keyObject) &&
-            this.player.x < 20200) {
+        if (!isInEnterBakeryZone && bakeryText) {
+            bakeryText.destroy();
+            bakeryText = null;
+        }
+        isInEnterBakeryZone = false;
 
+
+        // --- SORTIE BOULANGERIE ---
+        if (inBakery && this.player.x > 20150 && this.player.x < 20210 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromBakery();
         }
 
         // --- ENTRÉE SHOP ---
-        if (!inShop &&
-            this.player.x > 7140 && this.player.x < 7200 &&
-            Phaser.Input.Keyboard.JustDown(keyObject)) {
-
+        if (!inShop && this.player.x > 7130 && this.player.x < 7190 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToShop();
         }
 
         // --- SORTIE SHOP ---
-        if (inShop &&
-            Phaser.Input.Keyboard.JustDown(keyObject) &&
-            this.player.x < 23200) {
-
+        if (inShop && this.player.x > 23576 && this.player.x < 23633 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromShop();
         }
 
