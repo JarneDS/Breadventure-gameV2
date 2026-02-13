@@ -275,6 +275,8 @@ class LoadingScene extends Phaser.Scene {
         this.load.audio('pluie', 'assets/sounds/pluie.mp3');
         this.load.audio('porteOuvre', 'assets/sounds/porteOuvre.mp3');
         this.load.audio('ville', 'assets/sounds/ville.mp3');
+        this.load.audio('obtentionItem', 'assets/sounds/obtentionItem.mp3');
+        this.load.audio('checkout', 'assets/sounds/checkout.mp3');
         // pas charger loading.mp3 , plouf_dans_riviere.mp3
 
         this.load.spritesheet("son", "assets/sounds/sonON_OFF.png", {
@@ -781,6 +783,11 @@ class MainWorld extends Phaser.Scene {
         selectedCharacter = (data && data.character) ? data.character : 'henri';
 
         this.sound.mute = !soundOn;
+
+        this.obtentionItemSon = this.sound.add('obtentionItem');
+        this.checkoutSon = this.sound.add('checkout');
+        this.porteOuvreSon = this.sound.add('porteOuvre');
+        this.jumpSon = this.sound.add('jump');
         
         if (data && data.playerHasUmbrella !== undefined) {
             playerHasUmbrella = data.playerHasUmbrella;
@@ -789,7 +796,6 @@ class MainWorld extends Phaser.Scene {
         gameSpritesLayers = this.add.layer(); // On déclare la variable à l'avance pour éviter une erreur de référence
 
         keyObject = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        // Phaser.Input.Keyboard.JustDown(keyObject);
 
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -1622,7 +1628,7 @@ class MainWorld extends Phaser.Scene {
     }
     
     update() {
-        // --- ENTRÉE BOULANGERIE ---
+        // entrée boulangerie
         if (!inBakery && this.player.x > 13760 && this.player.x < 13800 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToBakery();
         }
@@ -1635,7 +1641,7 @@ class MainWorld extends Phaser.Scene {
         isInEnterBakeryZone = false;
 
 
-        // --- SORTIE BOULANGERIE ---
+        // sortie boulangerie
         if (inBakery && this.player.x > 20150 && this.player.x < 20210 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromBakery();
         }
@@ -1647,7 +1653,7 @@ class MainWorld extends Phaser.Scene {
         }
         isInExitBakeryZone = false;
 
-        // --- ENTRÉE SHOP ---
+        // entrée shop
         if (!inShop && this.player.x > 7130 && this.player.x < 7190 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToShop();
         }
@@ -1659,7 +1665,7 @@ class MainWorld extends Phaser.Scene {
         }
         isInEnterShopZone = false;
 
-        // --- SORTIE SHOP ---
+        // sortie shop
         if (inShop && this.player.x > 23576 && this.player.x < 23633 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromShop();
         }
@@ -1902,11 +1908,75 @@ class MainWorld extends Phaser.Scene {
         }
 
         if (inBakery && this.physics.overlap(this.player, bakeryPain)) {
-            if (!playerHasBread && money >= 5) {
+            /*if (!playerHasBread && money >= 5) {
                 playerHasBread = true;
                 bakeryPain.disableBody(true, true);
                 money -= 5;
                 this.scoreText.setText('Argent : ' + money + "$");
+            }*/
+            if (!playerHasBread && money >= 5) {
+                playerHasBread = true;
+                bakeryPain.disableBody(true, true);
+                money -= 5;
+
+                if (!this.obtentionItemSon.isPlaying) {
+                    this.obtentionItemSon.play({ volume: 1 });
+                    this.obtentionItemSon.once("complete", () => this.checkoutSon.play());
+                }
+
+                let prefix = '';
+
+                if (playerHasBrum) {
+                    prefix = '_brum';
+                } else if (playerHasUmbrella) {
+                    prefix = '_umbrella';
+                } else if (playerHasBread) {
+                    prefix = '_bread';
+                } else {
+                    prefix = '';
+                }
+
+
+                if (playerHasBread) {
+                    this.player.anims.play('receive_bread_' + selectedCharacter, true);
+                    this.player.setVelocity(0, 0);
+                    this.player.body.moves = false;
+                    playerHasBread = false;
+
+                    // Durée réelle de animation (4 frames à 6 fps ≈ 666 ms)
+                    this.time.delayedCall(2593, () => {
+                        this.player.body.moves = true;
+                        playerHasBread = true;
+                        this.player.anims.play('static' + prefix + '_' + selectedCharacter, true);
+                    });
+                }
+
+                // MAJ texte argent
+                if (this.scoreText) {
+                    this.scoreText.setText('Argent : ' + money + '$');
+                }
+                // Achat -> -5$ +texte pour user
+                const txt = this.add.text(10, 70, '-5$', { 
+                    fontSize: '28px',
+                    fill: '#ff5555',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                txt.setScrollFactor(0);
+                this.time.delayedCall(1200, () => txt.destroy());
+            } else if (money < 5) { //Alerte argent pas suffisant
+                const warn = this.add.text(10, 70, 'Pas assez d\'argent !', {
+                    fontSize: '28px',
+                    fill: '#ff0000',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                warn.setScrollFactor(0);
+                this.time.delayedCall(1500, () => warn.destroy());
             }
         }
 
