@@ -1622,6 +1622,7 @@ class MainWorld extends Phaser.Scene {
 
         this.input.keyboard.on('keydown-D', () => {
             this.scene.start('EndScene', {
+                character: selectedCharacter,
                 currentTime
             });
         })
@@ -2046,8 +2047,10 @@ class MainWorld extends Phaser.Scene {
                 mouchoirs += 1;
 
                 // MAJ texte argent et mouchoirs
-                if (this.moneyText) this.moneyText.setText('Argent : ' + money + '$');
-                this.mouchoirText.setText('Mouchoirs : ' + mouchoirs);
+                if (this.scoreText) {
+                    this.scoreText.setText('Argent : ' + money + '$');
+                    this.mouchoirText.setText('Mouchoirs : ' + mouchoirs);
+                }
 
                 // Petit feedback visuel
                 const txt = this.add.text(10, 70, '-2$', {
@@ -2063,11 +2066,11 @@ class MainWorld extends Phaser.Scene {
 
                 // Réapparition après 2 secondes
                 this.time.delayedCall(1000, () => {
-                    shopMouchoirs.enableBody(true, 784, 660, true, true);
+                    shopMouchoirs.enableBody(true, 23784, 660, true, true);
                 });
 
             } else { // Pas assez d'argent
-                const warn = this.add.text(10, 50, 'Pas assez d\'argent !', {
+                const warn = this.add.text(10, 70, 'Pas assez d\'argent !', {
                     fontSize: '28px',
                     fill: '#ff0000',
                     fontFamily: 'Fira Sans Condensed',
@@ -2077,6 +2080,7 @@ class MainWorld extends Phaser.Scene {
                 });
                 warn.setScrollFactor(0);
                 this.time.delayedCall(1500, () => warn.destroy());
+                this.checkoutSon.stop();
             }
         }
 
@@ -2084,8 +2088,6 @@ class MainWorld extends Phaser.Scene {
         // Effet de parallaxe
         this.ciel1.tilePositionX = this.cameras.main.scrollX * 0.06;
         this.ciel4.tilePositionX = this.cameras.main.scrollX * 0.06;*/
-
-        console.log(this.player.x);
     }
 }
 
@@ -2108,7 +2110,10 @@ class EndScene extends Phaser.Scene {
 
         this.bg = this.add.tileSprite(0, 0, 1194, 834, 'intro').setOrigin(0, 0);
         this.logo = this.add.tileSprite(597, 150, 873, 105, 'logo').setOrigin(0.5, 0.5);
-        perso = this.add.sprite(100, 712, 'player_brum_static_henri');
+        const character = (data && data.character) ? data.character : 'henri';
+
+        perso = this.add.sprite(100, 712, `player_brum_static_${character}`);
+        perso.play(`static_brum_${character}`);
 
         lastRunTimeMs = Math.floor(Date.now() - runTimerStart);
         let timerText;
@@ -2132,8 +2137,6 @@ class EndScene extends Phaser.Scene {
 
         timerText.setOrigin(0.5, 0.5);
         appuyA.setOrigin(0.5, 0.5);
-
-        perso.play('static_brum_henri');
 
         cursors = this.input.keyboard.createCursorKeys();
 
