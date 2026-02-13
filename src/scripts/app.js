@@ -91,7 +91,10 @@ let shopMouchoirs;
 let shopExit;
 
 // Sons intérieurs
-let obtentionItemSon, checkoutSon, porteOuvreSon, jumpSon;
+let obtentionItemSon;
+let checkoutSon;
+let porteOuvreSon;
+let jumpSon;
 
 Phaser.Sound.BaseSoundManager.prototype.selectAllAudio = function(action) {
     this.sounds.forEach(sound => {
@@ -683,10 +686,13 @@ class MainWorld extends Phaser.Scene {
 
     teleportToBakery() {
         this.isInInterior = true;
-        this.porteOuvreSon.play();
         inBakery = true;
         inShop = false;
         this.addFog();
+
+        if (this.porteOuvreSon) {
+            this.porteOuvreSon.play();
+        }
 
         // Position intérieure boulangerie
         this.player.setPosition(20159, 734);
@@ -716,10 +722,13 @@ class MainWorld extends Phaser.Scene {
 
     teleportToShop() {
         this.isInInterior = true;
-        this.porteOuvreSon.play();
         inShop = true;
         inBakery = false;
         this.addFog();
+
+        if (this.porteOuvreSon) {
+            this.porteOuvreSon.play();
+        }
 
         // Position intérieure shop
         this.player.setPosition(23584, 734);
@@ -743,6 +752,25 @@ class MainWorld extends Phaser.Scene {
         this.cameras.main.centerOn(7141, 738);
     }
 
+    showAlreadyHasBreadMessage() {
+        if (!painPrisShown) {
+            painPris = this.add.text(10, 70, 'Vous avez déjà un pain...', {
+                fontSize: '28px',
+                fill: '#000F05',
+                fontFamily: 'Fira Sans Condensed',
+                backgroundColor: "rgba(255,255,255,0.4)"
+            });
+            painPris.setScrollFactor(0);
+            painPrisShown = true;
+
+            this.time.delayedCall(1500, () => {
+                if (painPris) painPris.destroy();
+                painPris = null;
+                painPrisShown = false;
+            });
+        }
+    }
+
     preload(data){
         const character = (data && data.character) ? data.character : 'henri';
         this.obstacles = [];
@@ -761,7 +789,7 @@ class MainWorld extends Phaser.Scene {
         gameSpritesLayers = this.add.layer(); // On déclare la variable à l'avance pour éviter une erreur de référence
 
         keyObject = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        Phaser.Input.Keyboard.JustDown(keyObject);
+        // Phaser.Input.Keyboard.JustDown(keyObject);
 
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -1741,25 +1769,12 @@ class MainWorld extends Phaser.Scene {
             bakeryTextShown = false;
         }
 
-        if (playerHasBread) {
-            const distance2 = Phaser.Math.Distance.Between(this.player.x, this.player.y, 13760, 699);
+        const distanceToBakery = Phaser.Math.Distance.Between(this.player.x, this.player.y, 13760, 699);
 
-            if (!painPrisShown && distance2 <= 100) {
-                painPris = this.add.text(10, 70, 'Vous avez déjà un pain...', {
-                    fontSize: '28px',
-                    fill: '#000F05',
-                    fontFamily: 'Fira Sans Condensed',
-                    backgroundColor: "rgba(255,255,255,0.4)"
-                });
-                painPris.setScrollFactor(0);
-                painPrisShown = true;
-            } else if (painPrisShown && distance2 > 100) {
-                if (painPris) {
-                    painPris.destroy();
-                    painPris = null;
-                }
-                painPrisShown = false;
-            }
+        if (distanceToBakery < 100) {
+            isInEnterBakeryZone = true;
+        } else {
+            isInEnterBakeryZone = false;
         }
 
         if (shopTextShown) {
@@ -1782,8 +1797,12 @@ class MainWorld extends Phaser.Scene {
         }
 
         // touche A pour entrer dans boulangerie
-        if (inBakery && Phaser.Input.Keyboard.JustDown(keyObject) && this.player.x < 20200) {
-            this.teleportBackFromBakery();
+        if (isInEnterBakeryZone && Phaser.Input.Keyboard.JustDown(keyObject)) {
+            if (!playerHasBread) {
+                this.teleportToBakery();
+            } else {
+                this.showAlreadyHasBreadMessage();
+            }
         }
 
         // touche A pour entrer dans shop
