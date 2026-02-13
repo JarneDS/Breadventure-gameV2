@@ -82,8 +82,13 @@ let inBakery = false;
 let inShop = false;
 
 // Objets intérieurs
-let bakeryInterior, bakeryPain, bakeryExit;
-let shopInterior, shopParapluie, shopMouchoirs, shopExit;
+let bakeryInterior;
+let bakeryPain;
+let bakeryExit;
+let shopInterior;
+let shopParapluie;
+let shopMouchoirs;
+let shopExit;
 
 // Sons intérieurs
 let obtentionItemSon, checkoutSon, porteOuvreSon, jumpSon;
@@ -460,7 +465,9 @@ class LoadingScene extends Phaser.Scene {
             .setInteractive()
             .setScrollFactor(0);
 
-        soundButton.on('pointerdown', () => {
+        const keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
+        keyM.on('down', () => {
             soundOn = !soundOn;
             this.sound.mute = !soundOn;
 
@@ -679,32 +686,13 @@ class MainWorld extends Phaser.Scene {
         this.porteOuvreSon.play();
         inBakery = true;
         inShop = false;
+        this.addFog();
 
         // Position intérieure boulangerie
         this.player.setPosition(20159, 734);
         
         this.cameras.main.stopFollow();
-
-        const camWidth = this.cameras.main.width;
-        const camHeight = this.cameras.main.height;
-
-        this.cameras.main.setBounds(
-            this.bakeryCamPoint.x - camWidth / 2,
-            this.bakeryCamPoint.y - camHeight / 2,
-            camWidth,
-            camHeight
-        );
-
-        this.cameras.main.centerOn(
-            this.bakeryCamPoint.x,
-            this.bakeryCamPoint.y
-        );
-
-        if (bakeryText) {
-            bakeryText.destroy();
-            bakeryText = null;
-        }
-        bakeryTextShown = false;
+        this.cameras.main.setBounds(20000, -300, 3000, 1500);
     }
 
     teleportBackFromBakery() {
@@ -731,12 +719,13 @@ class MainWorld extends Phaser.Scene {
         this.porteOuvreSon.play();
         inShop = true;
         inBakery = false;
+        this.addFog();
 
         // Position intérieure shop
         this.player.setPosition(23584, 734);
         
         this.cameras.main.stopFollow();
-        this.cameras.main.setBounds(22900, -300, 3000, 1500);
+        this.cameras.main.setBounds(23000, -300, 3000, 1500);
         //this.cameras.main.centerOn(this.player.x, this.player.y);
 
     }
@@ -1277,7 +1266,9 @@ class MainWorld extends Phaser.Scene {
             .setScrollFactor(0)
             .setDepth(10001);
 
-        soundButton.on('pointerdown', () => {
+        const keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
+        keyM.on('down', () => {
             soundOn = !soundOn;
             this.sound.mute = !soundOn;
 
@@ -1921,7 +1912,7 @@ class MainWorld extends Phaser.Scene {
         this.ciel1.tilePositionX = this.cameras.main.scrollX * 0.06;
         this.ciel4.tilePositionX = this.cameras.main.scrollX * 0.06;*/
 
-        console.log(this.player.y);
+        console.log(this.player.x);
     }
 }
 
