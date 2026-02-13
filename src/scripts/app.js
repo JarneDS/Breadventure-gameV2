@@ -803,7 +803,6 @@ class MainWorld extends Phaser.Scene {
         overlayEau = null;
         overlayBoue = null;
         overlayCaca = null;
-        glassesRain = null;
         blurRain = null; //pluie blur lunettes
         overlayStack = [];
 
@@ -1326,66 +1325,98 @@ class MainWorld extends Phaser.Scene {
         glassesRain.setVisible(false);
         overlayStack.push(glassesRain);
 
-        const startRainFor = (ms) => {
-            this.isRaining = true; // pour que quand la pluie commence que isRaining passe en état true
-            if (!this.pluieSon.isPlaying) this.pluieSon.play({ volume: 1 });
+    const stopRain = () => {
+        this.isRaining = false;
 
-            this.rain.setVisible(true);
-            this.rain.play('rain_loop', true);
+        // Arrêter l’animation de pluie
+        this.rain.setVisible(false);
+        this.rain.stop();
 
-            if (playerHasUmbrella) {
+        // Arrêter le son
+        if (this.pluieSon.isPlaying) {
+            this.pluieSon.stop();
+        }
 
-                if (blurRain) { 
+        // Planifier la prochaine pluie
+        scheduleNextRain();
+    };
+
+
+    const startRainFor = (ms) => {
+        this.isRaining = true;
+
+        // Son
+        if (!this.pluieSon.isPlaying) {
+            this.pluieSon.play({ volume: 1 });
+        }
+
+        // Animation pluie
+        this.rain.setVisible(true);
+        this.rain.play('rain_loop', true);
+
+        // Effets selon parapluie
+        if (playerHasUmbrella) {
+
+            // Pas de blur
+            if (blurRain) { 
                 this.gameSpritesLayers.postFX.remove(blurRain); 
                 blurRain = null; 
-                }
-                if (glassesRain) glassesRain.setVisible(false);
-                } else {
+            }
 
-                if (!blurRain) {
-                    const blur = this.gameSpritesLayers.postFX.addBlur(4);
-                    blurRain = blur;
+            // Créer lunettes si pas encore créé
+            if (!glassesRain) {
+                glassesRain = this.add.image(0, 0, "glassesRain")
+                    .setOrigin(0, 0)
+                    .setScrollFactor(0)
+                    .setDepth(9999)
+                    .setAlpha(1); // pour tester
 
-                    overlayStack.push({
-                        destroy: () => {
+                gameSpritesLayers.add(glassesRain); // IMPORTANT
+            }
+            
+            glassesRain.setVisible(true);
+
+        } else {
+
+            // Blur si pas de parapluie
+            if (!blurRain) {
+                const blur = this.gameSpritesLayers.postFX.addBlur(4);
+                blurRain = blur;
+
+                overlayStack.push({
+                    destroy: () => {
                         if (blurRain) {
                             this.gameSpritesLayers.postFX.remove(blurRain);
                             blurRain = null;
                         }
-                        }
-                    });
-                }
-
-                if (!glassesRain) {
-                    glassesRain = this.add.image(0, 0, "glassesRain").setOrigin(0, 0);
-                    glassesRain.setScrollFactor(0);
-                    glassesRain.setDepth(950);
-                    glassesRain.setAlpha(0.6);
-                    overlayStack.push(glassesRain);
-                }
-                glassesRain.setVisible(true);
+                    }
+                });
             }
 
-            this.time.delayedCall(ms, () => {
-                this.rain.stop();
-                this.rain.setVisible(false);
-                this.isRaining = false; // pour que quand la pluie s'arrête que isRaining passe en état false
-                scheduleNextRain();
-            });
-        };
-
-        const scheduleNextRain = () => {
-            const waitMs = Phaser.Math.Between(10000, 20000);
-            this.time.delayedCall(waitMs, () => {
-                const rainMs = Phaser.Math.Between(6000, 15000);
-                startRainFor(rainMs);
-            });
-            if (this.pluieSon.isPlaying) {
-                this.pluieSon.stop();
+            // Pas de lunettes
+            if (glassesRain) {
+                glassesRain.setVisible(false);
             }
-        };
+        }
 
-        scheduleNextRain();
+        // Arrêter la pluie après ms millisecondes
+        this.time.delayedCall(ms, () => {
+            stopRain();
+        });
+    };
+
+
+    const scheduleNextRain = () => {
+        const waitMs = Phaser.Math.Between(10000, 20000);
+
+        this.time.delayedCall(waitMs, () => {
+            const rainMs = Phaser.Math.Between(6000, 15000);
+            startRainFor(rainMs);
+        });
+    };
+
+    // Lancer la première pluie
+    scheduleNextRain();
 
         this.physics.add.overlap(this.player, this.poops, (_player, poop) => {
             // Si le joueur a le parapluie ET qu'il pleut → on détruit le poop (bloqué)
