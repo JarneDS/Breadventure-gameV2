@@ -1763,11 +1763,10 @@ class MainWorld extends Phaser.Scene {
         }
 
         if (inBakery && Phaser.Input.Keyboard.JustDown(keyObject) && this.player.x < 20200) {
-            porteOuvreSon.play();
+            this.porteOuvreSon.play();
             inBakery = false;
             this.player.setPosition(13500, 500);
             this.cameras.main.pan(13500, 400, 500);
-            this.hideInteriorHUD();
         }
 
         if (playerHasBread && bakeryText) {
@@ -1796,11 +1795,10 @@ class MainWorld extends Phaser.Scene {
         }
 
         if (inShop && Phaser.Input.Keyboard.JustDown(keyObject) && this.player.x < 23200) {
-            porteOuvreSon.play();
+            this.porteOuvreSon.play();
             inShop = false;
             this.player.setPosition(7000, 500);
             this.cameras.main.pan(7000, 400, 500);
-            this.hideInteriorHUD();
         }
 
         // touche A pour entrer dans boulangerie
