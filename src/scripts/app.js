@@ -1694,7 +1694,7 @@ class MainWorld extends Phaser.Scene {
         const overlayActif = overlayEau || overlayBoue || overlayCaca || blurRain || (glassesRain && glassesRain.visible);
 
         const speedLeft  = overlayActif ? -200 : -250; // gauche
-        const speedRight = overlayActif ?  2000 :  2000; // droite
+        const speedRight = overlayActif ?  200 :  250; // droite
 
         // Saut
         if (Phaser.Input.Keyboard.JustDown(cursors.up) && this.player.body.onFloor()) {
@@ -1909,12 +1909,6 @@ class MainWorld extends Phaser.Scene {
         }
 
         if (inBakery && this.physics.overlap(this.player, bakeryPain)) {
-            /*if (!playerHasBread && money >= 5) {
-                playerHasBread = true;
-                bakeryPain.disableBody(true, true);
-                money -= 5;
-                this.scoreText.setText('Argent : ' + money + "$");
-            }*/
             if (!playerHasBread && money >= 5) {
                 playerHasBread = true;
                 bakeryPain.disableBody(true, true);
@@ -2157,7 +2151,7 @@ const config = {
     height: 834,
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 0 }, debug: true }
+        arcade: { gravity: { y: 0 }, debug: false }
     },
     audio: {
         disableWebAudio: true,
