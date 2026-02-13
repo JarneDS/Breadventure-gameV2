@@ -1985,16 +1985,98 @@ class MainWorld extends Phaser.Scene {
                 playerHasUmbrella = true;
                 shopParapluie.disableBody(true, true);
                 money -= 4;
-                this.scoreText.setText('Argent : ' + money + "$");
+
+                if (!this.checkoutSon.isPlaying) {
+                    this.checkoutSon.play({ volume: 1 });
+                }
+
+                const prefix = playerHasUmbrella ? '_umbrella': '';
+                if (playerHasUmbrella) {
+                    this.player.anims.play('receive_umbrella_' + selectedCharacter, true);
+                    this.player.setVelocity(0, 0);
+                    this.player.body.moves = false;
+                    playerHasUmbrella = false;
+
+                    this.time.delayedCall(1000, () => {
+                        this.player.body.moves = true;
+                        playerHasUmbrella = true;
+                        this.player.anims.play('static' + prefix + '_' + selectedCharacter, true);
+                    });
+                }
+
+                // MAJ texte argent
+                if (this.scoreText) {
+                    this.scoreText.setText('Argent : ' + money + '$');
+                }
+
+                // Achat -> -4$ + texte pour user
+                const txt = this.add.text(10, 70, '-4$', {
+                    fontSize: '28px',
+                    fill: '#ff5555',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                txt.setScrollFactor(0);
+                this.time.delayedCall(1200, () => txt.destroy());
+            } else if (money < 4) { //Alerte argent pas suffisant (pas 4$ dispo)
+                const warn = this.add.text(10, 70, 'Pas assez d\'argent !', { 
+                    fontSize: '28px',
+                    fill: '#ff0000',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                warn.setScrollFactor(0);
+                this.time.delayedCall(1500, () => warn.destroy());
             }
         }
 
         if (inShop && this.physics.overlap(this.player, shopMouchoirs)) {
+            if (!this.checkoutSon.isPlaying) {
+                this.checkoutSon.play({ volume: 1 });
+            }
+
+            // Condition d'achat
             if (money >= 2) {
+                shopMouchoirs.disableBody(true, true); // cache les mouchoirs
                 money -= 2;
                 mouchoirs += 1;
-                this.scoreText.setText('Argent : ' + money + "$");
+
+                // MAJ texte argent et mouchoirs
+                if (this.moneyText) this.moneyText.setText('Argent : ' + money + '$');
                 this.mouchoirText.setText('Mouchoirs : ' + mouchoirs);
+
+                // Petit feedback visuel
+                const txt = this.add.text(10, 70, '-2$', {
+                    fontSize: '28px',
+                    fill: '#ff5555',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                txt.setScrollFactor(0);
+                this.time.delayedCall(1200, () => txt.destroy());
+
+                // Réapparition après 2 secondes
+                this.time.delayedCall(1000, () => {
+                    shopMouchoirs.enableBody(true, 784, 660, true, true);
+                });
+
+            } else { // Pas assez d'argent
+                const warn = this.add.text(10, 50, 'Pas assez d\'argent !', {
+                    fontSize: '28px',
+                    fill: '#ff0000',
+                    fontFamily: 'Fira Sans Condensed',
+                    fontStyle: 'bold',
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                    padding: { x: 12, y: 9 }
+                });
+                warn.setScrollFactor(0);
+                this.time.delayedCall(1500, () => warn.destroy());
             }
         }
 
