@@ -794,6 +794,7 @@ class MainWorld extends Phaser.Scene {
         bakeryPain = this.physics.add.image(20583, 668, 'pain');
         bakeryExit = this.physics.add.staticImage(20159, 685, null).setSize(58,100).setVisible(false);
         let bakeryGround = this.physics.add.staticImage(20600, 784, null).setSize(1200,100).setVisible(false);
+        this.bakeryBackground = this.add.image(20000, -290, 'cielVille').setOrigin(0,0);
 
         this.bakeryCamPoint = { x: 20000, y: 0 };
         this.shopCamPoint = { x: 23000, y: 0 };
@@ -804,6 +805,7 @@ class MainWorld extends Phaser.Scene {
         shopMouchoirs = this.physics.add.image(23784, 660, 'mouchoirs');
         shopExit = this.physics.add.staticImage(23585, 685, null).setSize(57,100).setVisible(false);
         let shopGround = this.physics.add.staticImage(23600, 784, null).setSize(1200,100).setVisible(false);
+        this.shopBackground = this.add.image(23000, -290, 'cielVille').setOrigin(0,0);
 
         this.shopCamPoint = { x: 23000, y: 0 };
 
