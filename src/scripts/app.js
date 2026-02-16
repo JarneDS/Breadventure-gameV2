@@ -42,7 +42,6 @@ function formatElapsed(ms) {
 let overlayEau = null; //flaque eau
 let overlayBoue = null; //flaque boue
 let overlayCaca = null; //caca bird
-let glassesRain = null; //overlay pluie
 let blurRain = null; //pluie blur lunettes
 
 let overlayStack = []; //pile des overlays -> utile pour effacer le denier apparu
@@ -1321,10 +1320,11 @@ class MainWorld extends Phaser.Scene {
         this.rain.displayWidth = this.sys.game.config.width;
         this.rain.displayHeight = this.sys.game.config.height;
 
-        glassesRain = this.add.image(0, 0, "glassesRain").setOrigin(0, 0);
-        glassesRain.setScrollFactor(0);
-        glassesRain.setVisible(false);
-        overlayStack.push(glassesRain);
+        this.glassesRain = this.add.image(0, 0, "glassesRain").setOrigin(0, 0);
+        this.glassesRain.setScrollFactor(0);
+        this.glassesRain.setDepth(939);
+        this.glassesRain.setVisible(true);
+        console.log(this.glassesRain.width);
 
     const stopRain = () => {
         this.isRaining = false;
@@ -1354,6 +1354,9 @@ class MainWorld extends Phaser.Scene {
         // Animation pluie
         this.rain.setVisible(true);
         this.rain.play('rain_loop', true);
+        this.glassesRain.setVisible(true);
+        console.log(this.glassesRain);
+
 
         // Effets selon parapluie
         if (playerHasUmbrella) {
@@ -1363,20 +1366,7 @@ class MainWorld extends Phaser.Scene {
                 this.gameSpritesLayers.postFX.remove(blurRain); 
                 blurRain = null; 
             }
-
-            // Créer lunettes si pas encore créé
-            if (!glassesRain) {
-                glassesRain = this.add.image(0, 0, "glassesRain")
-                    .setOrigin(0, 0)
-                    .setScrollFactor(0)
-                    .setDepth(9999)
-                    .setAlpha(1); // pour tester
-
-                gameSpritesLayers.add(glassesRain); // IMPORTANT
-            }
             
-            glassesRain.setVisible(true);
-
         } else {
 
             // Blur si pas de parapluie
@@ -1395,8 +1385,8 @@ class MainWorld extends Phaser.Scene {
             }
 
             // Pas de lunettes
-            if (glassesRain) {
-                glassesRain.setVisible(false);
+            if (this.glassesRain) {
+                this.glassesRain.setVisible(false);
             }
         }
 
@@ -1606,7 +1596,9 @@ class MainWorld extends Phaser.Scene {
             overlayEau = null;
             overlayBoue = null;
             overlayCaca = null;
-            glassesRain = null;
+            if (this.glassesRain) {
+                this.glassesRain.setVisible(false);
+            }
             blurRain = null;
 
             mouchoirs -= 1;
@@ -1718,7 +1710,7 @@ class MainWorld extends Phaser.Scene {
         }
     
         // Déplacements X (perso ralenti si contact obstacle et que overlay actif)
-        const overlayActif = overlayEau || overlayBoue || overlayCaca || blurRain || (glassesRain && glassesRain.visible);
+        const overlayActif = overlayEau || overlayBoue || overlayCaca || blurRain || (this.glassesRain && this.glassesRain.visible);
 
         const speedLeft  = overlayActif ? -200 : -250; // gauche
         const speedRight = overlayActif ?  200 :  250; // droite
