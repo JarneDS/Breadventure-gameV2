@@ -1652,17 +1652,9 @@ class MainWorld extends Phaser.Scene {
             shopMouchoirs,
             this.player
         ]); // les ... sont pour décomposer les tableau pour que Phaser puisse appliquer l'effet sur tous les éléments du tableau
-
-        this.input.keyboard.on('keydown-D', () => {
-            this.scene.start('EndScene', {
-                character: selectedCharacter,
-                currentTime
-            });
-        })
     }
     
     update() {
-        console.log(this.player.x)
         // entrée boulangerie
         if (!inBakery && this.player.x > 13705 && this.player.x < 13810 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToBakery();
