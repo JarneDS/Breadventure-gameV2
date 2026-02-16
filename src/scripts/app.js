@@ -1643,6 +1643,8 @@ class MainWorld extends Phaser.Scene {
             this.bird,
             this.cone,
             this.cone2,
+            this.bakeryBackground,
+            this.shopBackground,
             bakeryInterior,
             shopInterior,
             bakeryPain,
@@ -1660,8 +1662,9 @@ class MainWorld extends Phaser.Scene {
     }
     
     update() {
+        console.log(this.player.x)
         // entrée boulangerie
-        if (!inBakery && this.player.x > 13760 && this.player.x < 13800 && Phaser.Input.Keyboard.JustDown(keyObject)) {
+        if (!inBakery && this.player.x > 13705 && this.player.x < 13810 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToBakery();
         }
 
@@ -1686,7 +1689,7 @@ class MainWorld extends Phaser.Scene {
         isInExitBakeryZone = false;
 
         // entrée shop
-        if (!inShop && this.player.x > 7130 && this.player.x < 7190 && Phaser.Input.Keyboard.JustDown(keyObject)) {
+        if (!inShop && this.player.x > 7090 && this.player.x < 7195 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportToShop();
         }
 
