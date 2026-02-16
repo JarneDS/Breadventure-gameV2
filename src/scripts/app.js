@@ -466,7 +466,7 @@ class LoadingScene extends Phaser.Scene {
 
         perso.play('static_bread_henri');
 
-        const soundButton = this.add.sprite(1165, 100, "son", soundOn ? 1 : 0)
+        const soundButton = this.add.sprite(1164, 100, "son", soundOn ? 1 : 0)
             .setInteractive()
             .setScrollFactor(0);
 
@@ -1296,7 +1296,7 @@ class MainWorld extends Phaser.Scene {
             runTimerText.setText(currentTime);
         }
 
-        const soundButton = this.add.sprite(1165, 100, "son", soundOn ? 1 : 0)
+        const soundButton = this.add.sprite(1164, 100, "son", soundOn ? 1 : 0)
             .setInteractive()
             .setScrollFactor(0)
             .setDepth(10001);
