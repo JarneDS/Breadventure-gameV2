@@ -572,6 +572,7 @@ class ExplenationScene extends Phaser.Scene {
             'Entrez dans les batiments avec "A"\n' +
             'Dans la boutique : mouchoirs - 2$ et parapluie - 4$\n' +
             'Dans la boulangerie : pain - 5$\n' +
+            'Coupez le son avec "M"\n' +
             'Bonne chance !',
             {
                 fontSize: '24px',
