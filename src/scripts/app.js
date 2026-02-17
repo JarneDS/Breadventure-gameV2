@@ -8,7 +8,7 @@ var font = new FontFaceObserver('Fira Sans Condensed');
 font.load().then(function () {});
 
 let cursors;
-let money = 3; // valeur par défaut
+let money = 5; // valeur par défaut
 let bakeryTextShown = false;
 let houseTextShown = false; //texte maison
 let bakeryText = null;
@@ -808,6 +808,10 @@ class MainWorld extends Phaser.Scene {
         blurRain = null; //pluie blur lunettes
         overlayStack = [];
 
+        // Layer pour les overlays (HUD)
+        this.uiLayer = this.add.layer();
+        this.cameras.main.ignore(this.uiLayer);
+
         // ciel + décors
         this.ciel1 = this.add.tileSprite(-140, -286, 4396, 1940, 'cielVille').setOrigin(0, 0);
         this.ciel2 = this.add.tileSprite(4056, -286, 2048, 1024, 'cielParc').setOrigin(0, 0);
@@ -1015,8 +1019,9 @@ class MainWorld extends Phaser.Scene {
                     overlayEau.displayHeight = this.sys.game.config.height;
                     overlayEau.angle = Phaser.Math.Between(0, 360);
                     overlayEau.setAlpha(0.8);
-                    overlayEau.setScrollFactor(0);
                     overlayEau.setDepth(999);
+                    overlayEau.setScrollFactor(0);
+                    this.uiLayer.add(overlayEau);
                     overlayStack.push(overlayEau);
 
                     setTimeout(() => {
@@ -1058,8 +1063,9 @@ class MainWorld extends Phaser.Scene {
                     overlayBoue.displayWidth  = this.sys.game.config.width;
                     overlayBoue.displayHeight = this.sys.game.config.height;
                     overlayBoue.angle = Phaser.Math.Between(0, 360);
-                    overlayBoue.setScrollFactor(0);
                     overlayBoue.setDepth(999);
+                    overlayBoue.setScrollFactor(0);
+                    this.uiLayer.add(overlayBoue);
                     overlayStack.push(overlayBoue);
                     
                     setTimeout(() => {
@@ -1545,8 +1551,9 @@ class MainWorld extends Phaser.Scene {
             }
 
             overlayCaca = this.add.image(0, 0, "merde").setOrigin(0, 0);
-            overlayCaca.setScrollFactor(0);
             overlayCaca.setDepth(2000);
+            overlayCaca.setScrollFactor(0);
+            this.uiLayer.add(overlayCaca);
             overlayStack.push(overlayCaca);
         });
 
@@ -1616,9 +1623,9 @@ class MainWorld extends Phaser.Scene {
                 overlayEau.displayWidth  = this.sys.game.config.width;
                 overlayEau.displayHeight = this.sys.game.config.height;
                 overlayEau.setAlpha(0.6);
-                overlayEau.setScrollFactor(0);
                 overlayEau.setDepth(999);
-
+                overlayEau.setScrollFactor(0);
+                this.uiLayer.add(overlayEau);
                 overlayStack.push(overlayEau);
             }
         }, null, this);
@@ -1633,9 +1640,9 @@ class MainWorld extends Phaser.Scene {
                 overlayBoue = this.add.image(0, 0, "boue_vue").setOrigin(0, 0);
                 overlayBoue.displayWidth  = this.sys.game.config.width;
                 overlayBoue.displayHeight = this.sys.game.config.height;
-                overlayBoue.setScrollFactor(0);
                 overlayBoue.setDepth(1000);
-
+                overlayBoue.setScrollFactor(0);
+                this.uiLayer.add(overlayBoue);
                 overlayStack.push(overlayBoue);
             }
         }, null, this);
@@ -1698,8 +1705,9 @@ class MainWorld extends Phaser.Scene {
             overlayEau.displayWidth  = this.sys.game.config.width;
             overlayEau.displayHeight = this.sys.game.config.height;
             overlayEau.setAlpha(0.6);
-            overlayEau.setScrollFactor(0);
             overlayEau.setDepth(999);
+            overlayEau.setScrollFactor(0);
+            this.uiLayer.add(overlayEau);
             overlayStack.push(overlayEau);
             }
         }
@@ -2118,7 +2126,8 @@ class EndScene extends Phaser.Scene {
     }
 
     create(data) {
-    // son
+        // son
+        this.sound.selectAllAudio('stop');
         const loadingSceneSon = this.sound.add('loadingScene');
         loadingSceneSon.play({ loop: true });
 
