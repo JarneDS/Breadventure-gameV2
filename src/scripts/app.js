@@ -1323,7 +1323,7 @@ class MainWorld extends Phaser.Scene {
         this.glassesRain = this.add.image(0, 0, "glassesRain").setOrigin(0, 0);
         this.glassesRain.setScrollFactor(0);
         this.glassesRain.setDepth(939);
-        this.glassesRain.setVisible(true);
+        this.glassesRain.setVisible(false);
         console.log(this.glassesRain.width);
 
     const stopRain = () => {
@@ -1359,20 +1359,14 @@ class MainWorld extends Phaser.Scene {
 
 
         // Effets selon parapluie
-        if (playerHasUmbrella) {
+        if (!playerHasUmbrella) {
 
-            // Pas de blur
-            if (blurRain) { 
-                this.gameSpritesLayers.postFX.remove(blurRain); 
-                blurRain = null; 
-            }
-            
-        } else {
+            // Affiche lunettes
+            this.glassesRain.setVisible(true);
 
-            // Blur si pas de parapluie
+            // Ajoute blur
             if (!blurRain) {
-                const blur = this.gameSpritesLayers.postFX.addBlur(4);
-                blurRain = blur;
+                blurRain = this.gameSpritesLayers.postFX.addBlur(4);
 
                 overlayStack.push({
                     destroy: () => {
@@ -1383,12 +1377,18 @@ class MainWorld extends Phaser.Scene {
                     }
                 });
             }
+        } else {
 
-            // Pas de lunettes
-            if (this.glassesRain) {
-                this.glassesRain.setVisible(false);
+            // Cache lunettes
+            this.glassesRain.setVisible(false);
+
+            // Supprime blur
+            if (blurRain) { 
+                this.gameSpritesLayers.postFX.remove(blurRain); 
+                blurRain = null; 
             }
         }
+
 
         // Arrêter la pluie après ms millisecondes
         this.time.delayedCall(ms, () => {
