@@ -8,7 +8,7 @@ var font = new FontFaceObserver('Fira Sans Condensed');
 font.load().then(function () {});
 
 let cursors;
-let money = 5; // valeur par défaut
+let money = 6; // valeur par défaut
 let bakeryTextShown = false;
 let houseTextShown = false; //texte maison
 let bakeryText = null;
@@ -856,11 +856,10 @@ class MainWorld extends Phaser.Scene {
         arrow2.anims.play('arrow', true);
         arrow2.setDepth(1000);
 
-        if (playerHasBread) {
-            const arrow3 = this.add.sprite(352, 630, 'arrow');
-            arrow3.anims.play('arrow', true);
-            arrow3.setDepth(1000);
-        }
+        const arrow3 = this.add.sprite(352, 630, 'arrow');
+        arrow3.anims.play('arrow', true);
+        arrow3.setDepth(1000);
+        arrow3.setVisible(false);
 
         // sons
         this.insectesSon = this.sound.add('insectes');
@@ -1201,6 +1200,7 @@ class MainWorld extends Phaser.Scene {
                     this.player.setVelocity(0, 0);
                     this.player.body.moves = false;
                     playerHasBread = false;
+                    arrow3.setVisible(true);
 
                     // Durée réelle de animation (4 frames à 6 fps ≈ 666 ms)
                     this.time.delayedCall(2593, () => {
@@ -1795,7 +1795,7 @@ class MainWorld extends Phaser.Scene {
 
 
         // sortie boulangerie
-        if (inBakery && this.player.x > 20150 && this.player.x < 20210 && Phaser.Input.Keyboard.JustDown(keyObject)) {
+        if (inBakery && this.player.x > 20100 && this.player.x < 20205 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromBakery();
         }
 
@@ -1819,9 +1819,11 @@ class MainWorld extends Phaser.Scene {
         isInEnterShopZone = false;
 
         // sortie shop
-        if (inShop && this.player.x > 23576 && this.player.x < 23633 && Phaser.Input.Keyboard.JustDown(keyObject)) {
+        if (inShop && this.player.x > 23550 && this.player.x < 23635 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromShop();
         }
+
+        console.log(this.player.x);
 
         if (!isInExitShopZone && shopText2) {
             shopText2.destroy();
