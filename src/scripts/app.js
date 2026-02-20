@@ -1193,7 +1193,6 @@ class MainWorld extends Phaser.Scene {
                     prefix = '';
                 }
 
-
                 if (playerHasBread) {
                     isReceivingItem = true;
                     this.player.anims.play('receive_bread_' + selectedCharacter, true);
@@ -1822,8 +1821,6 @@ class MainWorld extends Phaser.Scene {
         if (inShop && this.player.x > 23550 && this.player.x < 23635 && Phaser.Input.Keyboard.JustDown(keyObject)) {
             this.teleportBackFromShop();
         }
-
-        console.log(this.player.x);
 
         if (!isInExitShopZone && shopText2) {
             shopText2.destroy();
